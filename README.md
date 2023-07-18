@@ -1,4 +1,4 @@
-[![Tests](../../actions/workflows/tests-15-sprint.yml/badge.svg)](../../actions/workflows/tests-15-sprint.yml) [![Tests](../../actions/workflows/tests-14-sprint.yml/badge.svg)](../../actions/workflows/tests-14-sprint.yml)
+[![Статус тестов](../../actions/workflows/tests.yml/badge.svg)](../../actions/workflows/tests.yml)
 
 # Проект Mesto бэкенд + frontend
  _***Проектная работа №15. Курс «Веб-разработчик» от Яндекс Практикум.***_
