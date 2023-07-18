@@ -1,7 +1,7 @@
 [![Tests](../../actions/workflows/tests-13-sprint.yml/badge.svg)](../../actions/workflows/tests-13-sprint.yml) [![Tests](../../actions/workflows/tests-14-sprint.yml/badge.svg)](../../actions/workflows/tests-14-sprint.yml)
 
-# Проект Mesto бэкенд + frontend
- _***Проектная работа №15. Курс «Веб-разработчик» от Яндекс Практикум.***_
+# Проект Mesto бэкенд
+ _***Проектная работа №14. Курс «Веб-разработчик» от Яндекс Практикум.***_
 
 ## Технологии:
   <a href="https://expressjs.com/ru/" target="_blank" rel="noreferrer"><img src="https://img.shields.io/badge/-Express-090909?style=for-the-badge&logo=Express" alt="Express" /></a>
@@ -28,7 +28,6 @@
 + Центральная обработка ошибок
 + Валидация входящих данных
 + Защитита API авторизации
-+ Деплой на Яндекс.Облако
 ------
 ### О чём проект?
 
@@ -41,16 +40,22 @@
 * Карточки можно создавать и удалять, а также лайкать.
 * Поля валидируются (например ссылки или email).
 ------
+### Директории
 
-### Ссылки на проект
+`/routes` — папка с файлами роутера  
+`/controllers` — папка с файлами контроллеров пользователя и карточки   
+`/models` — папка с файлами описания схем пользователя и карточки
 
-IP-адрес <a href="http://51.250.110.42/" target="_blank" rel="noreferrer">51.250.110.42</a>   
-Frontend <a href="https://voredev.nomoredomains.xyz/" target="_blank" rel="noreferrer">https://voredev.nomoredomains.xyz</a>   
-Backend <a href="https://api.nomoredomains.xyz/" target="_blank" rel="noreferrer">https://api.nomoredomains.xyz</a>
+Остальные директории вспомогательные, создаются при необходимости разработчиком
+
+### Запуск проекта
+
+`npm run start` — запускает сервер   
+`npm run dev` — запускает сервер с hot-reload
 
 
 Репозиторий:
 
 ```bash
-git clone https://github.com/maratdev/react-mesto-api-full-gha
+git clone https://github.com/maratdev/express-mesto-gha/
 ```
