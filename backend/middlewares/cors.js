@@ -1,11 +1,19 @@
 const allowedCors = [
-  'http://localhost:3000',
+  'localhost:3000',
   'https://localhost:3000',
-  'api.nomoredomains.xyz',
-  'www.api.nomoredomains.xyz',
+  'http://localhost:3000',
+  'http://api.nomoredomains.xyz',
+  'https://api.nomoredomains.xyz',
+  'http://www.api.nomoredomains.xyz',
+  'https://www.api.nomoredomains.xyz',
+
+  'http://voredev.nomoredomains.xyz',
+  'https://voredev.nomoredomains.xyz',
+  'http://www.voredev.nomoredomains.xyz',
+  'https://www.voredev.nomoredomains.xyz',
 ];
 
-const DEFAULT_ALLOWED_METHODS = 'GET,HEAD,PUT,PATCH,POST,DELETE';
+const DEFAULT_ALLOWED_METHODS = 'GET,HEAD,PUT,PATCH,POST,DELETE,PUT';
 
 module.exports = (req, res, next) => {
   const { origin } = req.headers;
@@ -18,7 +26,7 @@ module.exports = (req, res, next) => {
   if (method === 'OPTIONS') {
     res.header('Access-Control-Allow-Methods', DEFAULT_ALLOWED_METHODS);
     res.header('Access-Control-Allow-Headers', requestHeaders);
-    res.end();
+    return res.end();
   }
-  next();
+  return next();
 };

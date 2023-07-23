@@ -7,7 +7,6 @@ import EditAvatarPopup from "./EditAvatarPopup";
 import ImagePopup from "./ImagePopup";
 import NoFound from "./NoFound";
 import ConfirmDeletePopup from "./ConfirmDeletePopup";
-import api from "../utils/Api";
 //---------------------HOC--------------------------------------------/
 import { CurrentUserContext } from "../contexts/CurrentUserContext";
 import { ProtectedRouteElement } from "../hooks/ProtectedRoute";
@@ -18,8 +17,7 @@ import Login from "./sign-in/Login";
 import Register from "./sign-up/Register";
 import InfoTooltip from "./InfoTooltip";
 import * as auth from "../utils/auth";
-
-
+import * as Api from "../utils/Api";
 
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);
@@ -66,25 +64,20 @@ function App() {
     setInfoTooltip(false);
   }
 
-  // Инициализация User info
-  useEffect(() => {
-    api
-      .getDataUser()
+  // Инициализация User и Card
+  function loadUserAndCards() {
+    Api.getDataUser()
       .then((userData) => {
         setCurrentUser(userData);
       })
       .catch(console.error);
-  }, []);
 
-  // Инициализация Card
-  useEffect(() => {
-    api
-      .getInitialCards()
+    Api.getInitialCards()
       .then((initialCards) => {
-        setCards(initialCards);
+        setCards(initialCards.reverse());
       })
       .catch(console.error);
-  }, []);
+  }
 
   // ---------------------------------------------------------> Открыте изображение
   function handleCardClick(card) {
@@ -94,9 +87,8 @@ function App() {
 
   // Api---------------------------------------------------------> Like
   function handleCardLike(cardId, likes) {
-    const isLiked = likes.some((i) => i._id === currentUser._id);
-    api
-      .changeLikeCardStatus(cardId, !isLiked)
+    const isLiked = likes?.some((i) => i === currentUser._id);
+    Api.changeLikeCardStatus(cardId, !isLiked)
       .then((newCard) => {
         setCards((state) =>
           state.map((element) => (element._id === cardId ? newCard : element))
@@ -104,11 +96,11 @@ function App() {
       })
       .catch(console.error);
   }
+
   // Api---------------------------------------------------------> Удаление карточки
   function handleCardDelete() {
     setIsLoading(true);
-    api
-      .deleteCard(cardId)
+    Api.deleteCard(cardId)
       .then(() => {
         setCards(cards.filter((item) => item._id !== cardId));
         closeAllPopups();
@@ -127,8 +119,7 @@ function App() {
   // Api---------------------------------------------------------> Изменение данных пользователя
   function handleUpdateUser(userData) {
     setIsLoading(true);
-    api
-      .saveDataInfo(userData)
+    Api.saveDataInfo(userData)
       .then((updateUser) => {
         setCurrentUser(updateUser);
         closeAllPopups();
@@ -138,11 +129,11 @@ function App() {
         setIsLoading(false);
       });
   }
+
   // Api---------------------------------------------------------> Изменение аватара
   function handleUpdateAvatar(userData) {
     setIsLoading(true);
-    api
-      .saveDataProfile(userData)
+    Api.saveProfileAvatar(userData)
       .then((userAvatar) => {
         setCurrentUser(userAvatar);
         closeAllPopups();
@@ -153,14 +144,11 @@ function App() {
       });
   }
 
-
   // Api---------------------------------------------------------> Добавление карточки
   function handleAddPlaceSubmit(inputValues) {
     setIsLoading(true);
-    api
-      .saveCardInfo(inputValues)
+    Api.saveCardInfo(inputValues)
       .then((cardData) => {
-
         setCards([cardData, ...cards]);
         closeAllPopups();
       })
@@ -170,29 +158,29 @@ function App() {
       });
   }
 
-  // ---------------------------------------------------------> Аутинфикация пользоватедя
-  function tokenCheck() {
-    const jwt = localStorage.getItem("jwt");
-    if (jwt) {
-      auth
-        .getContent(jwt)
-        .then(({ data }) => {
-          navigate("/app");
-          setLoggedIn(!loggedIn);
-          setUserData({ email: data.email });
-        })
-        .catch((error) => console.log(error));
-    }
-  }
+  // ---------------------------------------------------------> Аутинфикация пользователя
+  useEffect(() => {
+    auth
+      .checkToken()
+      .then((res) => {
+        if (res.email) {
+          loadUserAndCards();
+          setUserData({ email: res.email });
+          setLoggedIn(true);
+        }
+      })
+      .catch(console.error);
+  }, [loggedIn]);
 
   useEffect(() => {
-    tokenCheck();
-  }, []);
-
+    if (loggedIn) {
+      navigate("/app", { replace: true });
+    }
+  }, [loggedIn]);
 
   // ---------------------------------------------------------> Регистрация пользователя
 
-function handleRegisterUser({password, email}) {
+  function handleRegisterUser({ password, email }) {
     auth
       .register(password, email)
       .then(() => {
@@ -210,23 +198,23 @@ function handleRegisterUser({password, email}) {
           image: false,
           message: "Пользователь с таким email уже зарегистрирован",
         });
-        console.log(error)
+        console.log(error);
       });
   }
 
   // ---------------------------------------------------------> Авторизация пользователя
 
-
-  function handleAuthorizeUser({password, email}) {
+  function handleAuthorizeUser({ password, email }) {
     auth
       .authorize(password, email)
-      .then((data) => {
-        if (data.token) {
-          setUserData({ email });
-          localStorage.setItem("jwt", data.token);
-          setLoggedIn(!loggedIn);
-          navigate("/app", { replace: true });
-        }
+      .then(() => {
+        auth.checkToken().then((res) => {
+          if (res.email) {
+            loadUserAndCards();
+            setUserData({ email });
+            setLoggedIn(true);
+          }
+        });
       })
       .catch((error) => {
         setInfoTooltip(true);
@@ -234,19 +222,21 @@ function handleRegisterUser({password, email}) {
           image: false,
           message: "Неверный адрес электронной почты или пароль!",
         });
-        console.log(error)
+        console.log(error);
       });
   }
-
-
 
   // ---------------------------------------------------------> Выход
 
   function signOut() {
-    setUserData({ email: "" });
-    localStorage.removeItem("jwt");
-    navigate("/signin", { replace: true });
-    setLoggedIn(!loggedIn);
+    auth
+      .logout()
+      .then(() => {
+        navigate("/signin", { replace: true });
+        setLoggedIn(!loggedIn);
+        setUserData({ email: "" });
+      })
+      .catch((error) => console.log(error));
   }
 
   return (

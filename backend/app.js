@@ -5,6 +5,8 @@ const rateLimit = require('express-rate-limit');
 const mongoose = require('mongoose');
 const { errors } = require('celebrate');
 const cookieParser = require('cookie-parser');
+const cors = require('./middlewares/cors');
+const { requestLogger, errorLogger } = require('./middlewares/logger');
 const router = require('./routes');
 const { TIME_LIMIT, MAX_LIMIT } = require('./util/constants');
 const { login, createUser, logout } = require('./controllers/auth');
@@ -19,16 +21,25 @@ const limiter = rateLimit({
   max: MAX_LIMIT,
 });
 app.use(limiter);
-
+app.use(cors);
 app.use(express.json());
 app.use(cookieParser());
+
+app.use(requestLogger); // подключаем логгер запросов
+// Краш-тест сервера
+app.get('/crash-test', () => {
+  setTimeout(() => {
+    throw new Error('Сервер сейчас упадёт');
+  }, 0);
+});
 // Добавление данных
+// app.use(readCookie);
 app.post('/signup', validationCreateUser, createUser);
 app.post('/signin', validationLogin, login);
 app.get('/signout', logout);
 
 app.use(router);
-
+app.use(errorLogger); // подключаем логгер ошибок
 mongoose
   .connect(DB, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log('✔ Connected to MongoDB '))

@@ -1,4 +1,11 @@
-export const BASE_URL = "https://auth.nomoreparties.co/";
+const _api = {
+ // BASE_URL: "http://localhost:5000/",
+  BASE_URL: "https://api.nomoredomains.xyz/",
+  HEADERS: {
+    Accept: "application/json",
+    "Content-Type": "application/json",
+  },
+};
 
 function _request(url, options) {
   return fetch(url, options).then(_getResponseData);
@@ -11,35 +18,37 @@ function _getResponseData(res) {
   return Promise.reject(`Ошибка ${res.status}`);
 }
 
-export const getContent = (jwt) => {
-  return _request(BASE_URL + "users/me", {
-    method: "GET",
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${jwt}`,
-    },
-  });
-};
-
 export const register = (password, email) => {
-  return _request(BASE_URL + "signup",{
+  return _request(_api.BASE_URL + "signup",{
     method: "POST",
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-    },
+    credentials: 'include',
+    headers: _api.HEADERS,
     body: JSON.stringify({ password, email }),
   })
 };
 
 export const authorize = (password, email) => {
-  return _request(BASE_URL + "signin", {
+  return _request(_api.BASE_URL + "signin", {
     method: "POST",
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ password, email }),
+    credentials: 'include',
+    headers: _api.HEADERS,
+   body: JSON.stringify({ password, email }),
   })
 };
+
+export const logout = () => {
+  return _request(_api.BASE_URL + "signout", {
+    method: "GET",
+    credentials: 'include',
+    headers: _api.HEADERS,
+  });
+};
+
+export const checkToken = () => {
+    return _request(_api.BASE_URL + "users/me", {
+      method: "GET",
+      credentials: 'include',
+      headers: _api.HEADERS,
+  });
+};
+
