@@ -52,5 +52,5 @@ Backend <a href="https://api.nomoredomains.xyz/" target="_blank" rel="noreferrer
 Репозиторий:
 
 ```bash
-git clone https://github.com/maratdev/react-mesto-api-full-gha
+git clone https://github.com/maratdev/react-mesto-api-full-gha/
 ```
