@@ -6,7 +6,9 @@ const ConflictError = require('../errors/ConflictError');
 const { CREATED } = require('../errors/statusCode');
 const { JWT_TOKEN_EXPIRES, COOKIE_MAX_AGE } = require('../util/constants');
 
-const { NODE_ENV, JWT_SECRET } = process.env;
+const {
+  NODE_ENV, JWT_SECRET, COOKIE_SAMESITE, COOKIE_SECURE,
+} = process.env;
 
 // Создаёт пользователя
 const createUser = (req, res, next) => {
@@ -35,10 +37,10 @@ const login = (req, res, next) => {
     .then((user) => {
       const token = jwt.sign({ _id: user._id.toString() }, NODE_ENV === 'production' ? JWT_SECRET : 'prpZUoYKk3YJ3nhemFHZ', { expiresIn: JWT_TOKEN_EXPIRES });
       res.cookie('jwt', token, {
-        maxAge: COOKIE_MAX_AGE * 24 * 7,
+        maxAge: COOKIE_MAX_AGE,
         httpOnly: true,
-        secure: true,
-        sameSite: 'none',
+        sameSite: NODE_ENV === 'production' ? COOKIE_SAMESITE : 'Lax',
+        secure: NODE_ENV === 'production' ? COOKIE_SECURE : false,
       });
       res.send({ token });
     })
