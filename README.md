@@ -45,7 +45,7 @@
 ### Ссылки на проект
 
 
-IP <a href="http://51.250.26.68/" target="_blank" rel="noreferrer">http://51.250.26.68</a>  
+IP <a href="http://51.250.26.68/" target="_blank" rel="noreferrer">51.250.26.68</a>  
 Frontend <a href="https://voredev.nomoredomains.xyz/" target="_blank" rel="noreferrer">https://voredev.nomoredomains.xyz</a>   
 Backend <a href="https://api.nomoredomains.xyz/" target="_blank" rel="noreferrer">https://api.nomoredomains.xyz</a>
 
